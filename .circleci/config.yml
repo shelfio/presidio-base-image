@@ -6,42 +6,41 @@ orbs:
 
 jobs:
   build:
+    parameters:
+      model:
+        type: string
+      version:
+        type: string
     executor: 'aws-ecr/default'
     steps:
       - checkout
       - aws-ecr/build-image:
           dockerfile: Dockerfile
           no-output-timeout: 10m
-          tag: 'latest'
           region: ${AWS_DEFAULT_REGION}
           registry-id: AWS_ACCOUNT_ID
           skip-when-tags-exist: false
           push-image: false
           repo: $CIRCLE_PROJECT_REPONAME
-
-workflows:
-  build_and_push_image:
-    jobs:
-      - docker/hadolint:
-          dockerfiles: Dockerfile
-          executor-class: medium
-
-      - build:
-          context: prod-us
-          filters:
-            branches:
-              only:
-                - /feature\/.*/
-
+          tag: << parameters.model >>-<< parameters.version >>
+          extra-build-args: |
+             --build-arg MODEL=<< parameters.model >>-<< parameters.version >>
+  build_and_publish:
+    parameters:
+      model:
+        type: string
+      version:
+        type: string
+    executor: 'aws-ecr/default'
+    steps:
+      - checkout
       - aws-ecr/build-and-push-image:
-          context: prod-us
-          executor: aws-ecr/default
           aws-access-key-id: AWS_ACCESS_KEY_ID
           aws-secret-access-key: AWS_SECRET_ACCESS_KEY
           aws-cli-version: latest
           create-repo: false
           repo: $CIRCLE_PROJECT_REPONAME
-          tag: 'latest'
+          tag: << parameters.model >>-<< parameters.version >>
           dockerfile: Dockerfile
           no-output-timeout: 20m
           public-registry: false
@@ -50,6 +49,73 @@ workflows:
           registry-id: AWS_ACCOUNT_ID
           repo-scan-on-push: true
           skip-when-tags-exist: false
+
+workflows:
+  build_and_push_image:
+    jobs:
+      - docker/hadolint:
+          dockerfiles: Dockerfile
+          executor-class: medium
+          ignore-rules: 'DL3013'
+
+
+      - build:
+          matrix:
+            parameters:
+              model: 
+                - hr_core_news_lg
+                - da_core_news_lg
+                - nl_core_news_lg
+                - en_core_web_lg
+                - fi_core_news_lg
+                - fr_core_news_lg
+                - de_core_news_lg
+                - el_core_news_lg
+                - it_core_news_lg
+                - lt_core_news_lg
+                - xx_ent_wiki_sm
+                - nb_core_news_lg
+                - pl_core_news_lg
+                - pt_core_news_lg
+                - ro_core_news_lg
+                - ru_core_news_lg
+                - es_core_news_lg
+                - sv_core_news_lg
+                - uk_core_news_trf
+              version: 
+                - "3.4.0"
+          context: prod-us
+          filters:
+            branches:
+              only:
+                - /feature\/.*/
+
+      - build_and_publish:
+          matrix:
+            parameters:
+              model: 
+                - hr_core_news_lg
+                - da_core_news_lg
+                - nl_core_news_lg
+                - en_core_web_lg
+                - fi_core_news_lg
+                - fr_core_news_lg
+                - de_core_news_lg
+                - el_core_news_lg
+                - it_core_news_lg
+                - lt_core_news_lg
+                - xx_ent_wiki_sm
+                - nb_core_news_lg
+                - pl_core_news_lg
+                - pt_core_news_lg
+                - ro_core_news_lg
+                - ru_core_news_lg
+                - es_core_news_lg
+                - sv_core_news_lg
+                - uk_core_news_trf
+              version: 
+                - "3.4.0"
+          context: prod-us
           filters:
             branches:
               only:
