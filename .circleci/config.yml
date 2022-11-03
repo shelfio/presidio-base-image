@@ -21,7 +21,7 @@ jobs:
           registry-id: AWS_ACCOUNT_ID
           skip-when-tags-exist: false
           push-image: false
-          repo: $CIRCLE_PROJECT_REPONAME
+          repo: lambda-presidio-base
           tag: << parameters.model >>-<< parameters.version >>
           extra-build-args: |
              --build-arg MODEL=<< parameters.model >>-<< parameters.version >>
@@ -39,7 +39,7 @@ jobs:
           aws-secret-access-key: AWS_SECRET_ACCESS_KEY
           aws-cli-version: latest
           create-repo: false
-          repo: $CIRCLE_PROJECT_REPONAME
+          repo: lambda-presidio-base
           tag: << parameters.model >>-<< parameters.version >>
           dockerfile: Dockerfile
           no-output-timeout: 20m
