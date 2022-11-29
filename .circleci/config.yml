@@ -67,7 +67,6 @@ workflows:
                 - hr_core_news_lg
                 - da_core_news_lg
                 - nl_core_news_lg
-                - en_core_web_lg
                 - fi_core_news_lg
                 - fr_core_news_lg
                 - de_core_news_lg
@@ -91,6 +90,19 @@ workflows:
               only:
                 - /feature\/.*/
 
+      - build:
+          matrix:
+            parameters:
+              model: 
+                - en_core_web_lg
+              version: 
+                - "3.4.1"
+          context: prod-us
+          filters:
+            branches:
+              only:
+                - /feature\/.*/
+
       - build_and_publish:
           matrix:
             parameters:
@@ -98,7 +110,6 @@ workflows:
                 - hr_core_news_lg
                 - da_core_news_lg
                 - nl_core_news_lg
-                - en_core_web_lg
                 - fi_core_news_lg
                 - fr_core_news_lg
                 - de_core_news_lg
@@ -116,6 +127,19 @@ workflows:
                 - uk_core_news_trf
               version: 
                 - "3.4.0"
+          context: prod-us
+          filters:
+            branches:
+              only:
+                - master
+
+      - build_and_publish:
+          matrix:
+            parameters:
+              model: 
+                - en_core_web_lg
+              version: 
+                - "3.4.1"
           context: prod-us
           filters:
             branches:
